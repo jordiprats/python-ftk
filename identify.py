@@ -7,7 +7,7 @@ import os
 
 debug = True
 
-def identify_faces(input_image_path, knn_clf):
+def identify_faces(input_image_path, knn_clf, distance_threshold=0.6):
 
     # test image
     input_image = face_recognition.load_image_file(input_image_path)
@@ -16,7 +16,7 @@ def identify_faces(input_image_path, knn_clf):
     found_face_locations = face_recognition.face_locations(input_image)
 
     # If no faces are found in the image, return an empty result.
-    if len(X_face_locations) == 0:
+    if len(found_face_locations) == 0:
         return []
 
     # Find encodings for faces in the test iamge
@@ -24,7 +24,7 @@ def identify_faces(input_image_path, knn_clf):
 
     # Use the KNN model to find the best matches for the test face
     closest_distances = knn_clf.kneighbors(faces_encodings, n_neighbors=1)
-    are_matches = [closest_distances[0][i][0] <= distance_threshold for i in range(len(X_face_locations))]
+    are_matches = [closest_distances[0][i][0] <= distance_threshold for i in range(len(found_face_locations))]
 
     return [(pred, loc) if rec else ("???", loc) for pred, loc, rec in zip(knn_clf.predict(faces_encodings), found_face_locations, are_matches)]
 
@@ -45,8 +45,8 @@ def show_recognized_faces(input_image_path, faces_found, output_image=None):
         draw.rectangle(((left, bottom - text_height - 10), (right, bottom)), fill=(0, 0, 255), outline=(0, 0, 255))
         draw.text((left + 6, bottom - text_height - 5), name, fill=(255, 255, 255, 255))
 
-    if output_image:
-        im.save(output_image)
+    # if output_image:
+    #     draw.save(output_image)
 
     # Remove the drawing library from memory as per the Pillow docs
     del draw
@@ -56,7 +56,7 @@ def show_recognized_faces(input_image_path, faces_found, output_image=None):
 
 if debug: print('TRAINING')
 
-knn_clf_file = file('knnclf.data')
+knn_clf_file = open('knnclf.data', "rb")
 knn_clf = pickle.load(knn_clf_file)
 
 if debug: print('FACERECOGNITION')
