@@ -1,0 +1,8 @@
+*.log
+*.pot
+*.py[cod]
+__pycache__/
+training/*/*
+knnclf.data
+input_image.jpg
+output_image.jpg
