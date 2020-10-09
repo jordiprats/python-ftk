@@ -45,8 +45,8 @@ def show_recognized_faces(input_image_path, faces_found, output_image=None):
         draw.rectangle(((left, bottom - text_height - 10), (right, bottom)), fill=(0, 0, 255), outline=(0, 0, 255))
         draw.text((left + 6, bottom - text_height - 5), name, fill=(255, 255, 255, 255))
 
-    # if output_image:
-    #     draw.save(output_image)
+    if output_image:
+        pil_image.save(output_image)
 
     # Remove the drawing library from memory as per the Pillow docs
     del draw
@@ -62,4 +62,4 @@ knn_clf = pickle.load(knn_clf_file)
 if debug: print('FACERECOGNITION')
 faces = identify_faces('input_image.jpg', knn_clf)
 if debug: print('RESULTS')
-show_recognized_faces('input_image.jpg', faces, 'output.jpg')
+show_recognized_faces('input_image.jpg', faces, 'output_image.jpg')
