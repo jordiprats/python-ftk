@@ -28,22 +28,17 @@ def identify_faces(input_image_path, knn_clf, distance_threshold=0.6):
 
     return [(pred, loc) if rec else ("???", loc) for pred, loc, rec in zip(knn_clf.predict(faces_encodings), found_face_locations, are_matches)]
 
-def show_recognized_faces(input_image_path, faces_found, output_image=None):
+def improve_faces(input_image_path, faces_found, improvement_dir='./improvements', output_image=None):
     pil_image = Image.open(input_image_path).convert("RGB")
     draw = ImageDraw.Draw(pil_image)
 
     for name, (top, right, bottom, left) in faces_found:
+        improvement = Image.open(os.path.join(improvement_dir, name+'.png')).convert("RGB")
+        
         # Draw a box around the face using the Pillow module
         draw.rectangle(((left, top), (right, bottom)), outline=(0, 0, 255))
 
-        # There's a bug in Pillow where it blows up with non-UTF-8 text
-        # when using the default bitmap font
-        name = name.encode("UTF-8")
-
-        # Draw a label with a name below the face
-        text_width, text_height = draw.textsize(name)
-        draw.rectangle(((left, bottom - text_height - 10), (right, bottom)), fill=(0, 0, 255), outline=(0, 0, 255))
-        draw.text((left + 6, bottom - text_height - 5), name, fill=(255, 255, 255, 255))
+        pil_image.paste(improvement, (left, top))
 
     if output_image:
         pil_image.save(output_image)
@@ -62,4 +57,4 @@ if debug: print('FACERECOGNITION')
 faces = identify_faces('input_image.jpg', knn_clf)
 
 if debug: print('RESULTS')
-show_recognized_faces('input_image.jpg', faces, 'output_image.jpg')
+improve_faces(input_image_path='input_image.jpg', faces_found=faces, output_image='output_image.jpg')
