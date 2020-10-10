@@ -3,6 +3,7 @@
 *.py[cod]
 __pycache__/
 training/*/*
+improvements/*/*
 knnclf.data
 input_image.jpg
 output_image.jpg
