@@ -29,15 +29,14 @@ def identify_faces(input_image_path, knn_clf, distance_threshold=0.6):
     return [(pred, loc) if rec else ("???", loc) for pred, loc, rec in zip(knn_clf.predict(faces_encodings), found_face_locations, are_matches)]
 
 def improve_faces(input_image_path, faces_found, improvement_dir='./improvements', output_image=None):
-    pil_image = Image.open(input_image_path).convert("RGB")
+    pil_image = Image.open(input_image_path)
     draw = ImageDraw.Draw(pil_image)
 
     for name, (top, right, bottom, left) in faces_found:
-        improvement = Image.open(os.path.join(improvement_dir, name+'.png')).convert("RGB")
+        improvement = Image.open(os.path.join(improvement_dir, name+'.png'))
         
-        # Draw a box around the face using the Pillow module
-        draw.rectangle(((left, top), (right, bottom)), outline=(0, 0, 255))
-
+        improvement = improvement.resize((bottom-top, right-left))
+        
         pil_image.paste(improvement, (left, top))
 
     if output_image:
